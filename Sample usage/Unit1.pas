@@ -7,7 +7,6 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Generics.Collections, USmartPointers;
 
 type
-
   TPerson = class
     FName: string;
     FAge: Integer;
@@ -15,23 +14,22 @@ type
     constructor Create; reintroduce; overload;
     constructor Create(const AName: string; const AAge: Integer); reintroduce; overload;
     destructor Destroy; override;
-    procedure Birthday; // Increment Age
+    procedure Birthday;
     property Name: string read FName write FName;
     property Age: integer read FAge write FAge;
   end;
-
+  {$IF CompilerVersion >= 34.0}
   TPersons = class(TRefCountable)
     FName: string;
     FAge: Integer;
   public
     constructor Create(const AName: string; const AAge: Integer); reintroduce;
     destructor Destroy; override;
-    procedure Birthday; // Increment Age
+    procedure Birthday;
     property Name: string read FName write FName;
     property Age: integer read FAge write FAge;
   end;
-
-
+  {$ENDIF}
   TForm1 = class(TForm)
     Btn_SmartPointer1: TButton;
     Btn_SmartPoniter5: TButton;
@@ -74,8 +72,16 @@ begin
 end;
 
 procedure TForm1.Btn_SmartPointer1Click(Sender: TObject);
+{$IF CompilerVersion < 34.0}
+var
+  Ali, Alex: ISmartPointer1<TPerson>;
+{$ENDIF}
 begin
+  {$IF CompilerVersion >= 34.0}
   var Ali: ISmartPointer1<TPerson> := TSmartPointer1<TPerson>.Create(TPerson.Create('Ali', 50));
+  {$ELSE}
+    Ali := TSmartPointer1<TPerson>.Create(TPerson.Create('Ali', 50));
+  {$ENDIF}
   { Now the smart pointer has a reference count of 1.}
 
 
@@ -91,8 +97,13 @@ begin
   Ali.Ref.Age := Ali.Ref.Age + 1;
   Ali.Ref.Birthday;
 
+  {$IF CompilerVersion >= 34.0}
   var Alex := Ali;
-    Alex.Ref.Name := 'Alex';
+  {$ELSE}
+  Alex := Ali;
+  {$ENDIF}
+
+  Alex.Ref.Name := 'Alex';
   {if I copy the smart pointer, it's OK and it will have a reference count of 2 now.}
 
 
@@ -113,6 +124,7 @@ end;
 
 procedure TForm1.Btn_SmartPointer2Click(Sender: TObject);
 begin
+ {$IF CompilerVersion >= 34.0}
   var Person1 := TSmartPointer2<TPersons>.Create(TPersons.Create('Ali', 35));
   { The smart pointer has a reference count of 1. }
 
@@ -136,10 +148,14 @@ begin
 
   { Now Foo1 will go out of scope, reducing the
     reference count to 0 and destroying the TFoo object. }
+{$ELSE}
+  ShowMessage('This method works with Delphi 10.4 Sydney and above!');
+{$ENDIF}
 end;
 
 procedure TForm1.Btn_SmartPointer3Click(Sender: TObject);
 begin
+ {$IF CompilerVersion >= 34.0}
   var Person1 := TSmartPointer3<TPerson>.Create(TPerson.Create('Ali', 35));
   { The smart pointer has a reference count of 1. }
 
@@ -162,10 +178,14 @@ begin
 
   { Now Foo1 will go out of scope, reducing the
     reference count to 0 and destroying the TFoo object. }
+{$ELSE}
+  ShowMessage('This method works with Delphi 10.4 Sydney and above!');
+{$ENDIF}
 end;
 
 procedure TForm1.Btn_SmartPointer4Click(Sender: TObject);
 begin
+{$IF CompilerVersion >= 34.0}
   var Person1 := TSmartPointer4<TPerson>.Create(TPerson.Create('Ali', 35));
   { The smart pointer has a reference count of 1. }
 
@@ -188,6 +208,9 @@ begin
 
   { Now Foo1 will go out of scope, reducing the
     reference count to 0 and destroying the TFoo object. }
+{$ELSE}
+  ShowMessage('This method works with Delphi 10.4 Sydney and above!');
+{$ENDIF}
 end;
 
 procedure TForm1.Btn_SmartPoniter5Click(Sender: TObject);
@@ -269,6 +292,7 @@ end;
 {$ENDREGION}
 
 {$REGION 'TPersons implementation'}
+{$IF CompilerVersion >= 34.0}
 procedure TPersons.Birthday;
 begin
   ShowMessage(FName + ' was born in year ' + IntToStr(CurrentYear - FAge));
@@ -285,5 +309,7 @@ begin
   ShowMessage('Destroying ' + FName + '...');
   inherited;
 end;
+{$ENDIF}
 {$ENDREGION}
+
 end.

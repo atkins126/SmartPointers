@@ -23,6 +23,7 @@ type
 {$ENDREGION}
 
 {$REGION 'SmartPointer2 / Smart Pointer implementation Using a CMR(Custom Managed Record) with a Base Class.'}
+{$IF CompilerVersion >= 34.0}  // CMR is supported from 10.4 Sydney
   TRefCountable = class abstract
   protected
     FRefCount: Integer;
@@ -41,9 +42,11 @@ type
 
     property Ref: T read FRef;
   end;
+{$ENDIF}
 {$ENDREGION}
 
 {$REGION 'SmartPointer3 / Smart Pointer implementation Using a CMR(Custom Managed Record) with a Shared Reference Count.'}
+{$IF CompilerVersion >= 34.0}
   TSmartPointer3<T: class> = record
   private
     FRef: T;
@@ -58,9 +61,11 @@ type
 
     property Ref: T read FRef;
   end;
+{$ENDIF}
 {$ENDREGION}
 
 {$REGION 'SmartPointer4 / Smart Pointer implementation Using a CMR(Custom Managed Record) with a Monitor Hack.'}
+{$IF CompilerVersion >= 34.0}
   TSmartPointer4<T: class> = record
   private
     FRef: T;
@@ -75,6 +80,7 @@ type
 
     property Ref: T read FRef;
   end;
+{$ENDIF}
 {$ENDREGION}
 
 {$REGION 'SmartPointer5 / Smart Pointer implementation using anonymouse methods.'}
@@ -117,7 +123,6 @@ type
 implementation
 
 {$REGION 'SmartPointer1 / Smart Pointer implementation using Object Interfaces.'}
-
 constructor TSmartPointer1<T>.Create(const ARef: T);
 begin
   inherited Create;
@@ -137,6 +142,7 @@ end;
 {$ENDREGION}
 
 {$REGION 'SmartPointer2 / Smart Pointer implementation Using a CMR(Custom Managed Record) with a Base Class.'}
+{$IF CompilerVersion >= 34.0}
 class operator TSmartPointer2<T>.Assign(var ADest: TSmartPointer2<T>; const [ref] ASrc: TSmartPointer2<T>);
 begin
   if (ADest.FRef <> ASrc.FRef) then
@@ -180,9 +186,11 @@ begin
   if (FRef <> nil) then
     AtomicIncrement(FRef.FRefCount);
 end;
+{$ENDIF}
 {$ENDREGION}
 
 {$REGION 'SmartPointer3 / Smart Pointer implementation Using a CMR(Custom Managed Record) with a Shared Reference Count.'}
+{$IF CompilerVersion >= 34.0}
 class operator TSmartPointer3<T>.Assign(var ADest: TSmartPointer3<T>; const [ref] ASrc: TSmartPointer3<T>);
 begin
   if (ADest.FRef <> ASrc.FRef) then
@@ -236,9 +244,11 @@ begin
   if (FRefCount <> nil) then
     AtomicIncrement(FRefCount^);
 end;
+{$ENDIF}
 {$ENDREGION}
 
 {$REGION 'SmartPointer4 / Smart Pointer implementation Using a CMR(Custom Managed Record) with a Monitor Hack.'}
+{$IF CompilerVersion >= 34.0}
 class operator TSmartPointer4<T>.Assign(var ADest: TSmartPointer4<T>; const [ref] ASrc: TSmartPointer4<T>);
 begin
   if (ADest.FRef <> ASrc.FRef) then
@@ -292,6 +302,7 @@ begin
   if (RefCountPtr <> nil) then
     AtomicIncrement(RefCountPtr^);
 end;
+{$ENDIF}
 {$ENDREGION}
 
 {$REGION 'SmartPointer5 / Smart Pointer implementation using anonymouse methods.'}
